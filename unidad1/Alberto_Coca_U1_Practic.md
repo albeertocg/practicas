@@ -120,6 +120,17 @@ Usa ChatGPT, Claude u otro LLM con el siguiente prompt:
 
 ```
 Escribe una descripción de 2 oraciones sobre un bosque misterioso.
+Temperature = 0.2
+
+Un bosque oscuro y silencioso se extiende bajo una niebla constante, con árboles altos que apenas dejan pasar la luz. El aire es frío y solo se escuchan ramas crujir a lo lejos.
+
+Temperature = 0.8
+
+La niebla se enrosca entre los pinos como si respirara, y cada sombra parece moverse un segundo tarde, como si te imitara. Entre el musgo húmedo, hay huellas que aparecen y desaparecen, guiándote hacia un lugar que no recuerdas haber buscado.
+
+Temperature = 1.5
+
+El bosque sueña con tus pasos y los troncos susurran nombres que no son tuyos, abriendo puertas de hojas donde no debería haber nada. La luna cae en pedazos sobre la niebla y, de pronto, el suelo decide que arriba y abajo son solo sugerencias.
 ```
 
 Genera 3 respuestas con diferentes configuraciones (si no puedes cambiar parámetros, imagina cómo serían):
