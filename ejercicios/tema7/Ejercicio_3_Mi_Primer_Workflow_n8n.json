@@ -1,0 +1,212 @@
+{
+  "name": "Ejercicio 3 - Mi Primer Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "7d8f24bf-c445-4e24-946a-d9ed44a02635",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        260,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "812f579b-7483-4a68-8bae-1e52966b5a6c",
+              "name": "nombre",
+              "type": "string",
+              "value": "María García"
+            },
+            {
+              "id": "bc7f780d-f38a-432a-8dfb-186982e601e5",
+              "name": "edad",
+              "type": "number",
+              "value": 28
+            },
+            {
+              "id": "5b951dc3-0c9c-4b96-9cc0-7e4d447ab028",
+              "name": "curso",
+              "type": "string",
+              "value": "Aprendizaje Automático II"
+            },
+            {
+              "id": "02e7654d-e6c3-48b5-bfef-572d32d1dd81",
+              "name": "nota_final",
+              "type": "number",
+              "value": 7.5
+            },
+            {
+              "id": "e6e74d9d-22c6-4b3b-a064-48effbc0b0e5",
+              "name": "asistencia_porcentaje",
+              "type": "number",
+              "value": 85
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "99b3285b-a665-47a8-9d9f-4a1a09e985c9",
+      "name": "Set Datos Estudiante",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bb1cb9d7-3456-464b-a08a-c65066b22ac3",
+              "leftValue": "={{ $json.nota_final }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5dd07343-1b90-4848-a505-3e9d33602877",
+      "name": "IF Nota >= 5",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        740,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d8740239-f550-4491-ac84-6826213fb044",
+              "name": "resultado",
+              "type": "string",
+              "value": "Aprobado"
+            },
+            {
+              "id": "68bdf6ba-4b17-464f-b4b4-3b89e795b616",
+              "name": "mensaje",
+              "type": "string",
+              "value": "={{ 'Enhorabuena, ' + $json.nombre + '. Has aprobado con un ' + $json.nota_final + '.' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ed1e7f8f-ecab-43c5-b17d-ae278fb628a1",
+      "name": "Set Aprobado",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        980,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "duplicateItem": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "accb0cc3-2719-4fdc-a733-8069c48d2bfb",
+              "name": "resultado",
+              "type": "string",
+              "value": "Suspenso"
+            },
+            {
+              "id": "1642ebe9-db39-4a0c-8098-b2df5a4e4a88",
+              "name": "mensaje",
+              "type": "string",
+              "value": "={{ 'Lo sentimos, ' + $json.nombre + '. No has alcanzado la nota mínima.' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f000cc02-344f-4504-9c98-fb9d8d0a1764",
+      "name": "Set Suspenso",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        980,
+        380
+      ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Datos Estudiante",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Datos Estudiante": {
+      "main": [
+        [
+          {
+            "node": "IF Nota >= 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Nota >= 5": {
+      "main": [
+        [
+          {
+            "node": "Set Aprobado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Suspenso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d5a11bbb-bdbd-45cc-a4af-b4be976a043c",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "tags": []
+}
