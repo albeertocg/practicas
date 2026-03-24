@@ -1,0 +1,143 @@
+{
+  "name": "Agente Atención al Cliente eCommerce",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-0001-0001-000000000001",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300],
+      "webhookId": "ecommerce-agent-webhook"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "# Rol\nEres un asistente virtual de atención al cliente de **TechStore Online**, una tienda especializada en productos tecnológicos. Tu nombre es \"Alex\" y tu misión es ayudar a los clientes de forma amable, profesional y honesta.\n\n# Tareas\n- Consultar el inventario real disponible en Google Sheets cuando el cliente pregunte por productos\n- Informar sobre disponibilidad, precios y descripción de los productos\n- Responder preguntas sobre las políticas de la tienda (envíos, devoluciones, garantías)\n- Mantener el contexto de la conversación para ofrecer una experiencia fluida\n- Si el cliente pregunta por un producto, siempre consulta el inventario antes de responder\n\n# Políticas de la Tienda\n- **Envíos:** Envío gratuito en pedidos superiores a 50€. Plazo de entrega: 2-5 días laborables en península.\n- **Devoluciones:** 30 días para devoluciones sin preguntas. El producto debe estar en perfecto estado.\n- **Garantía:** 2 años de garantía oficial en todos los productos.\n- **Pago:** Aceptamos tarjeta de crédito/débito, PayPal y transferencia bancaria.\n- **Horario atención:** Lunes a viernes de 9:00 a 18:00h.\n\n# Restricciones\n- NUNCA inventes productos que no estén en el inventario de Google Sheets\n- NUNCA des información falsa sobre el stock disponible\n- Si un producto no está en el inventario, indícalo claramente y sugiere alternativas si las hay\n- No prometas fechas de reposición de stock si no las conoces con certeza\n- No hagas descuentos ni ofertas especiales sin autorización\n\n# Formato\n- Usa un tono amable, cercano y profesional\n- Respuestas de máximo 250 palabras\n- Usa emojis con moderación para dar calidez (✅, 📦, ℹ️)\n- Estructura la información con claridad cuando listes varios productos\n- Siempre despídete con una oferta de ayuda adicional"
+        }
+      },
+      "id": "a1b2c3d4-0002-0002-0002-000000000002",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [520, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "a1b2c3d4-0003-0003-0003-000000000003",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [360, 520],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credentials",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "fromInput",
+        "contextWindowLength": 10
+      },
+      "id": "a1b2c3d4-0004-0004-0004-000000000004",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [520, 520]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "TU_GOOGLE_SHEET_ID_AQUI",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Inventario",
+          "mode": "name"
+        },
+        "options": {
+          "headerRow": 1
+        },
+        "descriptionType": "manual",
+        "toolDescription": "Consulta el inventario completo de TechStore Online. Usa esta herramienta cuando el cliente pregunte por productos disponibles, precios, stock o descripción de artículos. Devuelve todos los productos con sus campos: nombre, precio, stock y descripción."
+      },
+      "id": "a1b2c3d4-0005-0005-0005-000000000005",
+      "name": "Google Sheets - Inventario",
+      "type": "@n8n/n8n-nodes-langchain.toolGoogleSheets",
+      "typeVersion": 4.5,
+      "position": [680, 520],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "google-oauth2-credentials",
+          "name": "Google OAuth2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Inventario": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-03-24T10:00:00.000Z",
+  "versionId": "v1.0.0"
+}
