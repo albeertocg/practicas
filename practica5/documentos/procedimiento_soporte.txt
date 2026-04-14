@@ -1,0 +1,47 @@
+PROCEDIMIENTO DE SOPORTE TÉCNICO - TECHCORP
+
+1. CLASIFICACIÓN DE INCIDENCIAS
+Las incidencias se clasifican en tres niveles de prioridad:
+- CRÍTICA (P1): Sistemas caídos que afectan a toda la empresa. Tiempo de
+  respuesta máximo: 30 minutos. Resolución objetivo: 4 horas.
+- ALTA (P2): Funcionalidad degradada que afecta a un departamento. Tiempo de
+  respuesta máximo: 2 horas. Resolución objetivo: 8 horas.
+- NORMAL (P3): Incidencias menores o consultas. Tiempo de respuesta máximo:
+  24 horas. Resolución objetivo: 3 días laborables.
+
+2. PROCESO DE REPORTE
+Para reportar una incidencia:
+a) Acceder al portal de soporte: soporte.techcorp.internal
+b) Seleccionar la categoría correspondiente (Hardware, Software, Red, Accesos)
+c) Describir el problema con el máximo detalle posible
+d) Adjuntar capturas de pantalla si es relevante
+e) Indicar la urgencia y el impacto en el trabajo
+El sistema asignará automáticamente un número de ticket y un técnico responsable.
+
+3. ESCALADO DE INCIDENCIAS
+Si una incidencia no se resuelve en el tiempo establecido:
+- P3 sin resolver en 3 días → Se escala a P2 automáticamente
+- P2 sin resolver en 8 horas → Se notifica al responsable de IT
+- P1 sin resolver en 4 horas → Se activa el protocolo de crisis con dirección
+
+4. MANTENIMIENTO PROGRAMADO
+Los mantenimientos se realizan los domingos de 2:00 a 6:00. Se notifica a todos
+los empleados con al menos 48 horas de antelación por email y en el portal.
+Durante el mantenimiento, los sistemas pueden no estar disponibles. En caso de
+emergencia, contactar con el teléfono de guardia: ext. 9999.
+
+5. POLÍTICA DE CONTRASEÑAS
+Las contraseñas deben cumplir los siguientes requisitos:
+- Mínimo 12 caracteres
+- Al menos una mayúscula, una minúscula, un número y un carácter especial
+- Cambio obligatorio cada 90 días
+- No se pueden reutilizar las últimas 5 contraseñas
+- Tras 5 intentos fallidos, la cuenta se bloquea automáticamente
+Para desbloquear la cuenta, contactar con soporte técnico presentando
+identificación válida.
+
+6. SOFTWARE AUTORIZADO
+Solo se puede instalar software aprobado por el departamento de IT. La lista
+de software autorizado está disponible en la intranet. Para solicitar la
+instalación de software adicional, abrir un ticket de categoría "Software"
+indicando el nombre del programa, la justificación y la URL de descarga oficial.

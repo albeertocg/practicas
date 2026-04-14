@@ -1,0 +1,19 @@
+# Entorno virtual
+rag_env/
+
+# Base vectorial (se regenera con ingesta.py)
+faiss_db/
+chroma_db/
+
+# API Keys
+.env
+.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Sistema
+.DS_Store
+Thumbs.db
