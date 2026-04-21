@@ -1,0 +1,741 @@
+{
+  "name": "My workflow CV TalentMatch",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.mensaje }}",
+        "options": {
+          "systemMessage": "=Actúa como un agente de inteligencia artificial especializado en reclutamiento para empresas. Tu tarea es analizar curriculums y machearlos con vacantes disponibles.\nCapacidades disponibles:\n•\tBase de datos vectorial: \"N8n\", donde se encuentran todos los curriculums y documentación relacionada.\nInstrucciones generales:\n1.\tInterpreta mi mensaje como una orden directa.\n2.\tSiempre trabaja en español o inglés según el idioma del contenido recibido en el caso de que te den otros idiomas deberas traducir  los curriculums, recuerda buscar en las ofertas en varios idiomas ya que a lo mejor un usuario te mete sus habilidades en español y estan subidas en ingles la oferta y deberas de machearla aun asi.\n\n3.\tSi necesitas información adicional, realiza una búsqueda semántica en la base vectorial “documents”.\n4.\tEntrega la respuesta en texto plano, con un estilo claro y compatible con JSON.\n5.\tNo incluyas emojis, comillas curvas, caracteres especiales, ni formato markdown.\n6.\tNo inventes información si no existe coincidencia, solo usa las vacantes de la base de datos. Siempre devuelve recomendaciones de skills cuando falte información o la coincidencia sea baja.\n7.\tNo utilices los caracteres prohibidos: [] * ´ \" + /n \\n =\nTarea principal:\nDado el contenido de uno o varios curriculums provenientes de la base de datos:\n1.\tGenera un ranking de vacantes ordenadas por nivel de coincidencia con cada CV, expresado en porcentaje.\n2.\tEstructura el ranking en tres grupos:\no\tCoincidencias altas: los mejores matches, alta afinidad con el CV.\no\tCoincidencias medias: hay match pero faltan algunas skills; incluye las skills necesarias para mejorar la coincidencia.\no\tNo coincidencias: vacantes que no machean; incluye recomendaciones de skills útiles basadas en el CV.\n3.\tPara todas las vacantes, siempre devolver feedback y:\no\tSkills necesarias\no\tSkills recomendadas\no\tFeedback claro\n4.\tSi no existe ninguna coincidencia válida, no inventes. Solo devuelve recomendaciones de skills relevantes para mejorar el CV.\nInformación que debes extraer del CV:\n•\tAños de experiencia\n•\tExperiencia profesional detallada\n•\tFormación: grado, máster o estudios relacionados (ADE, Economía, Business Analytics, etc.)\n•\tSkills y herramientas\n•\tIdiomas, comprobando si el nivel es igual o superior al requerido\nFormato de salida:\nSiempre responde en texto plano, siguiendo esta estructura semántica:\n1.\tNombre de las vacantes y una descripción de los puestos\n2.\tTodo el texto completo del análisis solicitado, incluyendo:\no\tRanking priorizado por porcentaje\no\tClasificación en alta coincidencia / media / sin coincidencia\no\tSkills necesarias\no\tSkills recomendadas\no\tFeedback\no\tRecomendaciones de mejora cuando aplique\nSi no tienes información suficiente para ejecutar la tarea, solicita los datos faltantes de forma clara.\nTu rol es ser proactivo, resolutivo y autónomo.\nRECUERDA que si el usuario nos dice que quiere la respuesta en audio recuerda añadir en el mensaje \"respuesta en audio\"\nHoy es {{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1184,
+        384
+      ],
+      "id": "70541e40-0783-4096-94f7-39c8d7f4d5cb",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1328,
+        832
+      ],
+      "id": "4e3c549a-aa6f-4cf7-8d89-abdc4b376d45",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "h9ZdFka7e3hCQuHi",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2764b1cc-570d-4003-827f-7931b73a2b02",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -352,
+        112
+      ],
+      "id": "9dd8fcd4-de2c-4a96-ae2c-4e300f70f3ac",
+      "name": "Webhook",
+      "webhookId": "2764b1cc-570d-4003-827f-7931b73a2b02"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b07077dc-5641-4175-8dc1-faf1f795c679",
+              "name": "mensaje",
+              "value": "={{ $json.body }}",
+              "type": "string"
+            },
+            {
+              "id": "85937794-1020-46cf-81b7-8827403c61f3",
+              "name": "mensaje",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        112
+      ],
+      "id": "66e855d6-7c09-4e22-9419-a6d52f702a97",
+      "name": "Mapeo de mensaje"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $('AI Agent1').item.json.output }}"
+            },
+            {
+              "content": "En base a la respuesta recibida, determina cuales son los trabajos que mas se le adecuan a su perfil, hazle un ranking con porcentajes, en el caso de que ninguno sea acorde di que ninguno, finalmente da feedaback de que cosas le faltan para optar a otros trabajos como por ejemplo: recomendaciones de trabajar en alguna skill que pidan en muchos puestos y el no tiene y en el caso de que la tuviese podria optar a tal puestos \n\nDetermina si la respuesta deberíamos dársela en formato audio o formato texto.\nSi el mensaje anterior nos dice que el usuario quiere que la respuesta sea audio pues audio sino siempre texto\nEn el caso de que sea formato audio resumelo a 4096 caracteres ES MUY IMPORTANTE\n\nRECUERDA METER EN EL MENSAJE: \"Audio\" o \"Texto\" dependiendo si lo quiere en audio o texto ",
+              "role": "system"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1840,
+        384
+      ],
+      "id": "e7dcec2f-4267-4f7f-8ff1-bb4cc46e0b99",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "h9ZdFka7e3hCQuHi",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const originalText = $input.first().json.output;\n\n  if (typeof originalText !== 'string') {\n    return {\n      json: {\n        error: 'El campo \"text\" no existe o no es un texto',\n        original: originalText\n      }\n    };\n  }\n\n  let cleaned = originalText\n    .replace(/<[^>]*>/g, '')                     // Quitar HTML\n    .replace(/\\r?\\n|\\r/g, ' ')                   // Saltos de línea a espacio\n    .replace(/\\t+/g, ' ')                        // Tabs a espacio\n    .replace(/[^\\p{L}\\p{N},.¿?:?\\s]+/gu, '')     // Mantener letras, números, , . : ¿ ? y espacios\n    .replace(/\\s+/g, ' ')                        // Normalizar múltiples espacios\n    .trim();                                     // Quitar espacios extremos\n\n  return {\n    json: {\n      cleaned\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        384
+      ],
+      "id": "992cd22a-94b0-4093-981c-e8a746d400d0",
+      "name": "Limpiamos el texto"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        992,
+        544
+      ],
+      "id": "cab50923-cc93-47b5-91e6-4e60110d1819",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "h9ZdFka7e3hCQuHi",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "N8n",
+        "toolDescription": "Sistema RAG",
+        "tableName": {
+          "__rl": true,
+          "value": "N8n",
+          "mode": "list",
+          "cachedResultName": "N8n"
+        },
+        "topK": 300,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        1328,
+        640
+      ],
+      "id": "457fe9f2-c607-4d1e-a6b1-545bc0ac9e55",
+      "name": "Ofertas de trabajo",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QeYhQ5RWu7bDg84m",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -144
+      ],
+      "id": "1398ce7e-4515-43f5-a991-ab4ed9414b4e",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6a0ec742-7f93-4ea1-af39-35d410da1c1a",
+                    "leftValue": "={{ $binary.file.mimeType }}\n",
+                    "rightValue": "pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PDF"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "374163cb-d6f6-4bb3-b7fe-f3022ded078b",
+                    "leftValue": "={{ $json.body.message }}",
+                    "rightValue": "=chat",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d2a38b75-c7c4-4bff-ab9e-8ac8870906ef",
+                    "leftValue": "=",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        192,
+        96
+      ],
+      "id": "f026f5c9-476c-4c47-9024-c191d23fb56c",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "body.data.media.data",
+        "options": {
+          "fileName": "fe.ogg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        272
+      ],
+      "id": "cf782cd0-bd30-4ee6-b883-2ac2074faf29",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        608,
+        272
+      ],
+      "id": "fd19be24-a058-42f5-a07e-1d85064a14d1",
+      "name": "Transcribir audio",
+      "credentials": {
+        "openAiApi": {
+          "id": "h9ZdFka7e3hCQuHi",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.content }}",
+                    "rightValue": "Texto",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "885de69c-8001-421f-ad5e-304003d8106b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Texto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1c5b603c-3721-480a-a0ef-97091417afbb",
+                    "leftValue": "={{ $json.message.content }}",
+                    "rightValue": "Audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2176,
+        384
+      ],
+      "id": "bd4f8160-1364-45e6-b2cb-faf7683dfba0",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const originalText = $input.first().json.message.content\n\n  if (typeof originalText !== 'string') {\n    return {\n      json: {\n        error: 'El campo \"output\" no es un texto',\n        original: originalText\n      }\n    };\n  }\n\n  // Función para reemplazar dígitos por letras (0 -> A, 1 -> B, ..., 9 -> J)\n  const replaceDigitsWithLetters = str => str.replace(/\\d/g, digit => String.fromCharCode(65 + Number(digit)));\n\n  let cleaned = originalText\n    .replace(/<[^>]*>/g, '')                         // Eliminar etiquetas HTML\n    .replace(/\\r?\\n|\\r/g, ' ')                       // Reemplazar saltos de línea con espacio\n    .replace(/\\t+/g, ' ')                            // Reemplazar tabulaciones con espacio\n    .replace(/[^\\p{L}\\d\\s]+/gu, '')                  // Mantener letras, dígitos y espacios\n    .replace(/\\s+/g, ' ')                            // Un solo espacio entre palabras\n    .trim();                                         // Quitar espacios al inicio y final\n\n  // Sustituir números por letras\n  cleaned = replaceDigitsWithLetters(cleaned);\n\n  return {\n    json: {\n      cleaned\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2464,
+        496
+      ],
+      "id": "17c37b1f-5d65-4318-8c5f-429480a5dda9",
+      "name": "Limpiamos texto"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        944
+      ],
+      "id": "ea6b948a-17ed-44ac-b5ee-1f206e4da01b",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "input": "={{ $json.cleaned }}",
+        "voice": "fable",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        768
+      ],
+      "id": "b772536a-186a-4986-a45b-c96633702e48",
+      "name": "Generate audio",
+      "credentials": {
+        "openAiApi": {
+          "id": "h9ZdFka7e3hCQuHi",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2656,
+        240
+      ],
+      "id": "8ebcebcc-0082-48c8-82cd-5f3ef79e0088",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a8646b22-3cf4-44f3-aba6-cfe2a96e311c",
+              "name": "reply",
+              "value": "={{ $json.message.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2384,
+        304
+      ],
+      "id": "212e2a55-426e-4de5-9a98-6e4e9a331b06",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2752,
+        960
+      ],
+      "id": "3a5adf30-1f1e-4e2c-987c-195efd21a32e",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1280,
+        528
+      ],
+      "id": "1d13c0f0-2a13-4893-8e79-2490d25b6c01",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "u9TXMTAW11KjO1c4",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Limpiamos el texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Ofertas de trabajo",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapeo de mensaje": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpiamos el texto": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ofertas de trabajo": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Mapeo de mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Transcribir audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribir audio": {
+      "main": [
+        [
+          {
+            "node": "Mapeo de mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Limpiamos texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpiamos texto": {
+      "main": [
+        [
+          {
+            "node": "Generate audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate audio": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mapeo de mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "69a5fdc7-7c12-4b37-937d-c04c49a2bfbb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ee6608b0cf83a7ee5760429012119386d07382d8814ac39a1159dbb4947e3053"
+  },
+  "id": "bFyYNRKjsVyluP34",
+  "tags": []
+}
