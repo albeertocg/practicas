@@ -8,17 +8,18 @@
             {
               "id": "3a4ddc58-c303-4e51-80e3-4077dcba7e7d",
               "name": "id",
-              "value": "={{ $('Google Drive Trigger1').item.json.id }}",
+              "value": "=={{ $binary.file.fileName }}",
               "type": "string"
             },
             {
               "id": "f4438fa1-1b0b-4058-b387-15f512b665a7",
               "name": "nombre",
-              "value": "={{ $('Google Drive Trigger1').item.json.name }}",
+              "value": "=={{ $binary.file.fileName }}",
               "type": "string"
             }
           ]
         },
+        "includeOtherFields": true,
         "options": {}
       },
       "type": "n8n-nodes-base.set",
@@ -304,7 +305,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a29a4e9d-b204-42ae-8902-f714cc14da05",
+  "versionId": "8db53a83-ab24-4cea-a817-35cf026f1aa0",
   "meta": {
     "instanceId": "ee6608b0cf83a7ee5760429012119386d07382d8814ac39a1159dbb4947e3053"
   },
