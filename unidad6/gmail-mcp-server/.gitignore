@@ -1,0 +1,21 @@
+# Credenciales OAuth - NUNCA subir
+credentials.json
+token.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+.venv/
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini

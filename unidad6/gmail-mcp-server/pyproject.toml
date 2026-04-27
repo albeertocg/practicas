@@ -1,0 +1,10 @@
+[project]
+name = "gmail-mcp-server"
+version = "0.1.0"
+description = "Servidor MCP para gestionar Gmail (Practica Unidad 6)"
+requires-python = ">=3.10"
+dependencies = [
+    "fastmcp",
+    "google-auth-oauthlib",
+    "google-api-python-client",
+]

@@ -25,6 +25,9 @@ yarn-error.log
 Thumbs.db
 desktop.ini
 
+# Claude Code
+.claude/
+
 # Editores
 .vscode/
 .idea/

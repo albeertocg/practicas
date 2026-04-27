@@ -111,7 +111,6 @@ Este proyecto integra **5 de las 6 unidades** del curso:
 | Speech-to-Text | OpenAI Whisper |
 | Text-to-Speech | OpenAI TTS (voz `fable`) |
 | Base vectorial | Supabase (tabla `N8n`, extensión pgvector) |
-| Memoria conversacional | Postgres Chat Memory |
 | Fuente de ofertas | Google Drive (Trigger) |
 | Canal externo | WhatsApp Cloud API (vía webhook) |
 
@@ -231,9 +230,9 @@ Enviar el PDF adjunto al webhook. El workflow extrae el texto del PDF automátic
 
 > Capturas disponibles en la carpeta `docs/`:
 
-- `docs/arquitectura.png` — diagrama completo de los dos workflows en n8n
+- `docs/arquitectura_general.png` — diagrama completo del workflow principal (CV TalentMatch) en n8n
+- `docs/arquitectura_subir_archivos.png` — diagrama del workflow de ingesta (Subir Vacantes) en n8n
 - `docs/demo_texto.png` — ejemplo de consulta por texto con respuesta ranking
-- `docs/demo_audio.png` — ejemplo de entrada por nota de voz y respuesta en audio
 - `docs/demo_pdf.png` — envío de CV en PDF y análisis generado
 - `docs/supabase_vectores.png` — vectores almacenados en la tabla `N8n`
 
@@ -262,7 +261,6 @@ Valor alto porque el agente compara el CV con TODAS las vacantes almacenadas y n
 El Switch inicial permite unificar tres formatos de entrada (PDF, texto, audio) en un único flujo, evitando duplicar la lógica del agente. El mismo patrón se aplica en la salida (Switch1) para decidir entre texto y audio según preferencia del usuario.
 
 ### Dificultades encontradas
-- **Conexión de la memoria Postgres:** el nodo `Postgres Chat Memory` está presente pero debe conectarse explícitamente al AI Agent como `ai_memory`. Sin esta conexión la memoria no persiste entre mensajes.
 - **Limpieza de texto antes de TTS:** la API de TTS de OpenAI tiene un límite de 4096 caracteres y no acepta ciertos caracteres especiales, por eso existe un nodo `Code` que limpia el texto (elimina HTML, saltos de línea, símbolos) antes de generar el audio.
 - **Sustitución de dígitos por letras en audio:** se reemplazan números por letras antes del TTS porque la voz en español pronunciaba mal ciertas secuencias numéricas.
 
@@ -280,7 +278,7 @@ El Switch inicial permite unificar tres formatos de entrada (PDF, texto, audio) 
 
 5. **Dashboard de métricas:** página web que muestre estadísticas del sistema (número de CVs procesados, tasa de match alta/media/baja, skills más demandadas) usando los datos almacenados en Postgres.
 
-6. **Conexión real de la memoria conversacional:** enlazar el nodo `Postgres Chat Memory` al AI Agent para que el asistente recuerde las conversaciones previas del mismo usuario (ej. "muéstrame más vacantes como la última que me enseñaste").
+6. **Memoria conversacional:** integrar un nodo de `Postgres Chat Memory` al AI Agent para que el asistente recuerde las conversaciones previas del mismo usuario (ej. "muéstrame más vacantes como la última que me enseñaste").
 
 ---
 
